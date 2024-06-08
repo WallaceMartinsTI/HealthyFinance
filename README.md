@@ -51,4 +51,4 @@ In the demonstration video the Calendar is always in English because the device 
 
 ## 📄 Licença
 
-Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](./license) para mais detalhes.
+This project is under the MIT license. See the [LICENSE](./license) file for more details.
