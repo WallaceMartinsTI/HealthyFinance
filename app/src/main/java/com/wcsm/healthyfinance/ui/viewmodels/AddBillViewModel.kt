@@ -8,13 +8,17 @@ import com.wcsm.healthyfinance.data.model.AddBillFormState
 import com.wcsm.healthyfinance.data.model.Bill
 import com.wcsm.healthyfinance.data.model.BillCategory
 import com.wcsm.healthyfinance.ui.util.parseDateFromString
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.UUID
+import javax.inject.Inject
 
-class AddBillViewModel : ViewModel() {
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class AddBillViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
 

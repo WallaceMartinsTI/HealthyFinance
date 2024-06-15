@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance.ui.screens
+package com.wcsm.healthyfinance.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -33,12 +33,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.wcsm.healthyfinance.data.model.MyTopAppBarIcon
 import com.wcsm.healthyfinance.data.model.Screen
 import com.wcsm.healthyfinance.ui.components.AppTitle
@@ -54,7 +52,7 @@ import com.wcsm.healthyfinance.ui.viewmodels.RegisterViewModel
 @Composable
 fun RegisterScreen(
     navController: NavHostController,
-    registerViewModel: RegisterViewModel = viewModel()
+    registerViewModel: RegisterViewModel = hiltViewModel()
 ) {
     val registerFormState by registerViewModel.registerFormState.collectAsState()
 

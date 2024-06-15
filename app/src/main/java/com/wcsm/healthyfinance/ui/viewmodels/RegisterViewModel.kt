@@ -9,13 +9,17 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.RegisterFormState
 import com.wcsm.healthyfinance.data.model.User
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 import kotlin.random.Random
 
-class RegisterViewModel : ViewModel() {
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
 

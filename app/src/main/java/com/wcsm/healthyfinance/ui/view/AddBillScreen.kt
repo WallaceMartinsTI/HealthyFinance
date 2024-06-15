@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance.ui.screens
+package com.wcsm.healthyfinance.ui.view
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -86,7 +86,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.wcsm.healthyfinance.data.model.HistoryItemType
 import com.wcsm.healthyfinance.data.model.ItemCategory
@@ -150,7 +150,7 @@ private val installmentOptions = listOf(
 @Composable
 fun AddBillScreen(
     navController: NavHostController,
-    addBillViewModel: AddBillViewModel = viewModel()
+    addBillViewModel: AddBillViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 

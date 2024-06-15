@@ -9,24 +9,24 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.Screen
 import com.wcsm.healthyfinance.data.model.User
 import com.wcsm.healthyfinance.ui.util.parseDateFromString
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class ProfileViewModel : ViewModel() {
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
-
 
     private val _userData = MutableStateFlow<User?>(null)
     val userData = _userData
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
-
-    private val _isUserDeleted = MutableStateFlow(false)
-    val isUserDeleted = _isUserDeleted.asStateFlow()
 
     private val _isLoadingUpdate = MutableStateFlow(false)
     val isLoadingUpdate = _isLoadingUpdate.asStateFlow()
@@ -84,7 +84,6 @@ class ProfileViewModel : ViewModel() {
                 auth.currentUser?.delete()?.addOnCompleteListener { task ->
                     if(task.isSuccessful) {
                         Log.i(TAG, "SUCESSO ao deletar usuário.")
-                        _isUserDeleted.value = true
                         navController.navigate(Screen.Home.route + "?userDeleted=true")
                     } else {
                         Log.i(TAG, "ERRO ao deletar usuário autenticado.")

@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance.ui.screens
+package com.wcsm.healthyfinance.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

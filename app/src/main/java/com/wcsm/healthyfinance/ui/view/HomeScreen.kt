@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance.ui.screens
+package com.wcsm.healthyfinance.ui.view
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -60,7 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.wcsm.healthyfinance.data.model.HistoryItemType
@@ -78,14 +78,13 @@ import com.wcsm.healthyfinance.ui.theme.Primary
 import com.wcsm.healthyfinance.ui.util.toBRL
 import com.wcsm.healthyfinance.ui.util.toBrazilianDateFormat
 import com.wcsm.healthyfinance.ui.viewmodels.HomeViewModel
-import com.wcsm.healthyfinance.ui.viewmodels.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
     backStackEntry: NavBackStackEntry,
-    homeViewModel: HomeViewModel = viewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     exitApp: () -> Unit = {}
 ) {
     val userDeletedString = backStackEntry.arguments?.getString("userDeleted") ?: "false"

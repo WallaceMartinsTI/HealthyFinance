@@ -7,13 +7,17 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.Bill
 import com.wcsm.healthyfinance.data.model.User
 import com.wcsm.healthyfinance.ui.util.formatTimestamp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
+) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
 

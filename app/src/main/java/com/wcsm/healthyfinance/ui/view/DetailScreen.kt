@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance.ui.screens
+package com.wcsm.healthyfinance.ui.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

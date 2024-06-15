@@ -1,4 +1,4 @@
-package com.wcsm.healthyfinance
+package com.wcsm.healthyfinance.ui
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
@@ -7,15 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,16 +17,18 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.wcsm.healthyfinance.data.model.Screen
-import com.wcsm.healthyfinance.ui.screens.AddBillScreen
-import com.wcsm.healthyfinance.ui.screens.DetailScreen
-import com.wcsm.healthyfinance.ui.screens.HomeScreen
-import com.wcsm.healthyfinance.ui.screens.LoginScreen
-import com.wcsm.healthyfinance.ui.screens.ProfileScreen
-import com.wcsm.healthyfinance.ui.screens.RegisterScreen
-import com.wcsm.healthyfinance.ui.screens.WelcomeScreen
+import com.wcsm.healthyfinance.ui.view.AddBillScreen
+import com.wcsm.healthyfinance.ui.view.DetailScreen
+import com.wcsm.healthyfinance.ui.view.HomeScreen
+import com.wcsm.healthyfinance.ui.view.LoginScreen
+import com.wcsm.healthyfinance.ui.view.ProfileScreen
+import com.wcsm.healthyfinance.ui.view.RegisterScreen
+import com.wcsm.healthyfinance.ui.view.WelcomeScreen
 import com.wcsm.healthyfinance.ui.theme.BackgroundColor
 import com.wcsm.healthyfinance.ui.theme.HealthyFinanceTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {

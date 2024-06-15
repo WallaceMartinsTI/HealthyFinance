@@ -1,8 +1,8 @@
 package com.wcsm.healthyfinance.data.model
 
 data class LoginFormState(
-    val email: String = "",
-    val password: String = "",
+    val email: String = "johndoe@test.com",
+    val password: String = "123456",
     val emailErrorMessage: String? = null,
     val passwordErrorMessage: String? = null,
     val rememberPasswordMessage: String? = null,
