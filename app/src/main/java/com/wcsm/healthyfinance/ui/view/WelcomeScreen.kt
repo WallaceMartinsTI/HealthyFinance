@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.wcsm.healthyfinance.data.model.MyTopAppBarIcon
 import com.wcsm.healthyfinance.data.model.Screen
 import com.wcsm.healthyfinance.ui.components.AppTitle
 import com.wcsm.healthyfinance.ui.components.MyTopAppBar
@@ -42,7 +41,7 @@ fun WelcomeScreen(
             .fillMaxSize()
             .background(BackgroundColor)
     ) {
-        MyTopAppBar(MyTopAppBarIcon.LOGO)
+        MyTopAppBar()
 
         AppTitle()
 

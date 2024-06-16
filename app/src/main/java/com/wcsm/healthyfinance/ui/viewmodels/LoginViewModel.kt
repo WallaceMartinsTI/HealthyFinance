@@ -24,8 +24,6 @@ class LoginViewModel @Inject constructor(
 
     private val TAG = "#FIREBASE_AUTH#"
 
-    //private val loginRepository = LoginRepositoryImpl()
-
     private val _loginFormState = MutableStateFlow(LoginFormState())
     val loginFormState = _loginFormState.asStateFlow()
 

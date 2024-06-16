@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.repository.LoginRepository
 import com.wcsm.healthyfinance.data.repository.LoginRepositoryImpl
+import com.wcsm.healthyfinance.data.repository.RegisterRepository
+import com.wcsm.healthyfinance.data.repository.RegisterRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +32,15 @@ object AppModule {
     @Singleton
     fun provideLoginRepository(auth: FirebaseAuth): LoginRepository {
         return LoginRepositoryImpl(auth)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRegisterRepository(
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore
+    ): RegisterRepository {
+        return RegisterRepositoryImpl(auth, firestore)
     }
 
 }

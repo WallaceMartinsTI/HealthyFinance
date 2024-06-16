@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.wcsm.healthyfinance.data.model.ItemCategory
-import com.wcsm.healthyfinance.data.model.MyTopAppBarIcon
 import com.wcsm.healthyfinance.ui.components.CircularLoading
 import com.wcsm.healthyfinance.ui.components.MyTopAppBar
 import com.wcsm.healthyfinance.ui.components.PrimaryButton
@@ -213,9 +212,7 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box {
-            MyTopAppBar(
-                MyTopAppBarIcon.ARROW_LEFT
-            ) {
+            MyTopAppBar(returnIcon = true) {
                 navController.popBackStack()
             }
 

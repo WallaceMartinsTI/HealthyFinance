@@ -90,7 +90,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.wcsm.healthyfinance.data.model.HistoryItemType
 import com.wcsm.healthyfinance.data.model.ItemCategory
-import com.wcsm.healthyfinance.data.model.MyTopAppBarIcon
 import com.wcsm.healthyfinance.data.model.Screen
 import com.wcsm.healthyfinance.ui.components.CircularLoading
 import com.wcsm.healthyfinance.ui.components.ErrorContainer
@@ -232,7 +231,7 @@ fun AddBillScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(contentAlignment = Alignment.Center) {
-            MyTopAppBar(iconOption = MyTopAppBarIcon.ARROW_LEFT) {
+            MyTopAppBar(returnIcon = true) {
                 navController.navigate(Screen.Home.route)
             }
             Text(
