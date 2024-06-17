@@ -113,6 +113,8 @@ fun ProfileScreen(
     var genderExpanded by remember { mutableStateOf(false) }
     var isNameFocused by remember { mutableStateOf(false) }
 
+    var returnClicked by remember { mutableStateOf(false) }
+
     val focusRequester = FocusRequester()
 
     var showDatePickerDialog by remember {
@@ -233,7 +235,10 @@ fun ProfileScreen(
     ) {
         Box {
             MyTopAppBar(returnIcon = true) {
-                navController.popBackStack()
+                if(!returnClicked) {
+                    returnClicked = true
+                    navController.popBackStack()
+                }
             }
 
             Column(

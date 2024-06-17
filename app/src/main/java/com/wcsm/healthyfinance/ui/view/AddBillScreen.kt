@@ -184,6 +184,8 @@ fun AddBillScreen(
 
     var switchChecked by remember { mutableStateOf(false) }
 
+    var returnClicked by remember { mutableStateOf(false) }
+
     var showDatePickerDialog by remember {
         mutableStateOf(false)
     }
@@ -236,7 +238,10 @@ fun AddBillScreen(
         topBar = {
             Box(contentAlignment = Alignment.Center) {
                 MyTopAppBar(returnIcon = true) {
-                    navController.navigate(Screen.Home.route)
+                    if(!returnClicked) {
+                        returnClicked = true
+                        navController.navigate(Screen.Home.route)
+                    }
                 }
                 Text(
                     text = "Cadastro",
