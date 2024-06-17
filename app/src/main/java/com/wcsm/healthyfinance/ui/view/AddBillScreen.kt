@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material.icons.filled.Warehouse
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.filled.WorkOff
 import androidx.compose.material3.Button
@@ -157,6 +158,9 @@ fun AddBillScreen(
     val updateMessage by addBillViewModel.updateMessage.collectAsState()
     val billAdded by addBillViewModel.billAdded.collectAsState()
 
+    val isConnected by addBillViewModel.isConnected.collectAsState()
+    var errorMessage by remember { mutableStateOf("") }
+
     val isExpenseScreen = addBillFormState.type == HistoryItemType.EXPENSE.toString()
 
     val valueFocusRequest = remember { FocusRequester() }
@@ -262,6 +266,7 @@ fun AddBillScreen(
                     category = "Selecione uma categoria"
                     selectedDate = ""
                     value = "0"
+                    errorMessage = ""
                 }
             )
 
@@ -282,6 +287,7 @@ fun AddBillScreen(
                     category = "Selecione uma categoria"
                     selectedDate = ""
                     value = "0"
+                    errorMessage = ""
                 }
             )
 
@@ -300,6 +306,7 @@ fun AddBillScreen(
                     category = "Selecione uma categoria"
                     selectedDate = ""
                     value = "0"
+                    errorMessage = ""
                 }
             )
         }
@@ -653,6 +660,19 @@ fun AddBillScreen(
             }
         }
 
+        if(errorMessage.isNotEmpty()) {
+            ErrorContainer(
+                errorMessage = errorMessage,
+                errorIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.WifiOff,
+                        contentDescription = "Wifi Off Icon",
+                        tint = Color.White
+                    )
+                }
+            )
+        }
+
         PrimaryButton(
             modifier = Modifier
                 .width(280.dp)
@@ -661,6 +681,8 @@ fun AddBillScreen(
             enabledText = "CADASTRAR",
             disabledText = "SALVANDO...",
             onClick = {
+                errorMessage = ""
+
                 addBillViewModel.setBillAdded(false)
 
                 if(value.isEmpty()) value = "0"
@@ -690,15 +712,21 @@ fun AddBillScreen(
                     }
                 }
 
-                addBillViewModel.updateAddBillFormState(
-                    addBillFormState.copy(
-                        value = value,
-                        category = category,
-                        installment = installmentForDatabase
-                    )
-                )
+                addBillViewModel.checkConnection()
 
-                addBillViewModel.saveBill(selectedDate)
+                if(isConnected) {
+                    addBillViewModel.updateAddBillFormState(
+                        addBillFormState.copy(
+                            value = value,
+                            category = category,
+                            installment = installmentForDatabase
+                        )
+                    )
+
+                    addBillViewModel.saveBill(selectedDate)
+                } else {
+                    errorMessage = "Sem conexão no momento, tente mais tarde."
+                }
             }
         )
 

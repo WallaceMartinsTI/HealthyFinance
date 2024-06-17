@@ -1,11 +1,13 @@
 package com.wcsm.healthyfinance.ui.viewmodels
 
+import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.wcsm.healthyfinance.data.model.LoginFormState
+import com.wcsm.healthyfinance.data.repository.NetworkRepository
 import com.wcsm.healthyfinance.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +17,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val networkRepository: NetworkRepository
 ) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
 
     private val _loginFormState = MutableStateFlow(LoginFormState())
     val loginFormState = _loginFormState.asStateFlow()
+
+    private val _isConnected = MutableStateFlow(networkRepository.isConnected())
+    val isConnected = _isConnected.asStateFlow()
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            _isConnected.value = networkRepository.isConnected()
+        }
+    }
 
     fun updateLoginFormState(newState: LoginFormState) {
         _loginFormState.value = newState

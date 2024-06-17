@@ -1,6 +1,8 @@
 package com.wcsm.healthyfinance.ui.viewmodels
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -10,6 +12,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.Screen
 import com.wcsm.healthyfinance.data.model.User
+import com.wcsm.healthyfinance.data.repository.NetworkRepository
 import com.wcsm.healthyfinance.data.repository.UserRepository
 import com.wcsm.healthyfinance.ui.util.parseDateFromString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val networkRepository: NetworkRepository,
     auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -38,6 +42,9 @@ class ProfileViewModel @Inject constructor(
     private val _updateMessage = MutableStateFlow("")
     val updateMessage = _updateMessage.asStateFlow()
 
+    private val _isConnected = MutableStateFlow(networkRepository.isConnected())
+    val isConnected = _isConnected.asStateFlow()
+
     private val currentUser = auth.currentUser
 
     fun setLoading(status: Boolean) {
@@ -52,8 +59,18 @@ class ProfileViewModel @Inject constructor(
         _updateMessage.value = message
     }
 
+    fun checkConnection() {
+        viewModelScope.launch {
+            _isConnected.value = networkRepository.isConnected()
+        }
+    }
+
     init {
         fetchUserData()
+    }
+
+    fun showDialog(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     fun updateUserProfile(name: String, birthDate: String, gender: String) {

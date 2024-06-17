@@ -27,7 +27,14 @@ import com.wcsm.healthyfinance.ui.theme.HealthyFinanceTheme
 
 @Composable
 fun ErrorContainer(
-    errorMessage: String
+    errorMessage: String,
+    errorIcon: @Composable (() -> Unit) = {
+        Icon(
+            imageVector = Icons.Filled.Warning,
+            contentDescription = "Warning icon",
+            tint = Color.White
+        )
+    }
 ) {
     Row(
         modifier = Modifier
@@ -38,11 +45,7 @@ fun ErrorContainer(
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Filled.Warning,
-            contentDescription = "Warning icon",
-            tint = Color.White
-        )
+        errorIcon()
 
         Spacer(modifier = Modifier.width(8.dp))
 
@@ -64,9 +67,9 @@ fun ErrorContainerPreview() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ErrorContainer("Não foi possível realizar a ação.")
+            ErrorContainer(errorMessage = "Não foi possível realizar a ação.")
             Spacer(modifier = Modifier.height(32.dp))
-            ErrorContainer("Informe uma descrição pois o valor informado nao pode ser vazio.")
+            ErrorContainer(errorMessage = "Informe uma descrição pois o valor informado nao pode ser vazio.")
         }
     }
 }

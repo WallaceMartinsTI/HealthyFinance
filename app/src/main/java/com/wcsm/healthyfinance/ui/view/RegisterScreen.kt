@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -24,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +58,9 @@ fun RegisterScreen(
     registerViewModel: RegisterViewModel = hiltViewModel()
 ) {
     val registerFormState by registerViewModel.registerFormState.collectAsState()
+    val isConnected by registerViewModel.isConnected.collectAsState()
+
+    var errorMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -176,13 +183,33 @@ fun RegisterScreen(
                 }
             }
 
+            if(errorMessage.isNotEmpty()) {
+                ErrorContainer(
+                    errorMessage = errorMessage,
+                    errorIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.WifiOff,
+                            contentDescription = "Wifi Off Icon",
+                            tint = Color.White
+                        )
+                    }
+                )
+            }
+
             PrimaryButton(
-                modifier = Modifier.width(280.dp),
+                modifier = Modifier.width(280.dp).padding(top = 8.dp),
                 enabled = !registerFormState.isLoading,
                 enabledText = "CADASTRAR",
                 disabledText = "CARREGANDO...",
                 onClick = {
-                    registerViewModel.createUser()
+                    errorMessage = ""
+
+                    registerViewModel.checkConnection()
+                    if(isConnected) {
+                        registerViewModel.createUser()
+                    } else {
+                        errorMessage = "Sem conexão no momento, tente mais tarde."
+                    }
                 }
             )
 

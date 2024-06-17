@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Male
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,6 +73,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.wcsm.healthyfinance.data.model.ItemCategory
 import com.wcsm.healthyfinance.ui.components.CircularLoading
+import com.wcsm.healthyfinance.ui.components.ErrorContainer
 import com.wcsm.healthyfinance.ui.components.MyTopAppBar
 import com.wcsm.healthyfinance.ui.components.PrimaryButton
 import com.wcsm.healthyfinance.ui.theme.BackgroundColor
@@ -97,12 +99,16 @@ fun ProfileScreen(
     val isLoadingUpdate by profileViewModel.isLoadingUpdate.collectAsState()
     val updateMessage by profileViewModel.updateMessage.collectAsState()
 
+    val isConnected by profileViewModel.isConnected.collectAsState()
+
     var showDeleteAccountDialog by remember { mutableStateOf(false) }
     var showConfirmDeleteAccountDialog by remember { mutableStateOf(false) }
 
     var name by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var gender by rememberSaveable { mutableStateOf("") }
+
+    var errorMessage by remember { mutableStateOf("") }
 
     var genderExpanded by remember { mutableStateOf(false) }
     var isNameFocused by remember { mutableStateOf(false) }
@@ -188,8 +194,14 @@ fun ProfileScreen(
                     border = BorderStroke(1.dp, ExpensePrimary.copy(alpha = 0.8f)),
                     enabledText = "SIM"
                 ) {
+                    profileViewModel.checkConnection()
                     showConfirmDeleteAccountDialog = false
-                    profileViewModel.deleteUser(navController)
+
+                    if(isConnected) {
+                        profileViewModel.deleteUser(navController)
+                    } else {
+                        profileViewModel.showDialog(context, "ERRO, sem conexão com a internet, tente mais tarde.")
+                    }
                 }
             },
             containerColor = BackgroundColor,
@@ -532,20 +544,40 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    if(errorMessage.isNotEmpty()) {
+                        ErrorContainer(
+                            errorMessage = errorMessage,
+                            errorIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.WifiOff,
+                                    contentDescription = "Wifi Off Icon",
+                                    tint = Color.White
+                                )
+                            }
+                        )
+                    }
+
                     PrimaryButton(
                         modifier = Modifier
-                            .width(280.dp),
+                            .width(280.dp).padding(top = 8.dp),
                         enabled = !isLoadingUpdate,
                         enabledText = "SALVAR ALTERAÇÕES",
                         disabledText = "ATUALIZANDO...",
                         onClick = {
                             profileViewModel.setLoadingUpdate(true)
 
-                            profileViewModel.updateUserProfile(
-                                name = name,
-                                birthDate = selectedDate,
-                                gender = gender
-                            )
+                            profileViewModel.checkConnection()
+
+                            if(isConnected) {
+                                profileViewModel.updateUserProfile(
+                                    name = name,
+                                    birthDate = selectedDate,
+                                    gender = gender
+                                )
+                            } else {
+                                errorMessage = "Sem conexão no momento, tente mais tarde."
+                                profileViewModel.setLoadingUpdate(false)
+                            }
                         }
                     )
 

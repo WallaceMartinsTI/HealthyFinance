@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -94,6 +95,7 @@ fun HomeScreen(
     var showDeleteBillDialog by remember { mutableStateOf(false) }
 
     val isSignout by homeViewModel.isSignout.collectAsState()
+    val isConnected by homeViewModel.isConnected.collectAsState()
 
     val isScreenLoading by homeViewModel.isScreenLoading.collectAsState()
     val showGraphic by homeViewModel.showGraphic.collectAsState()
@@ -115,6 +117,8 @@ fun HomeScreen(
     var isReversedBillsHistoric by remember { mutableStateOf(false) }
 
     val percentages by homeViewModel.percentages.collectAsState()
+
+    val context = LocalContext.current
 
     var showDatePickerDialog by remember {
         mutableStateOf(false)
@@ -250,8 +254,14 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         enabledText = "Excluir Conta"
                     ) {
+                        homeViewModel.checkConnection()
                         showDeleteBillDialog = false
-                        homeViewModel.deleteBillFrestore(billToBeDeleted!!.id)
+                        if(isConnected) {
+                            homeViewModel.deleteBillFrestore(billToBeDeleted!!.id)
+                            homeViewModel.showDialog(context, "Conta deletada!")
+                        } else {
+                            homeViewModel.showDialog(context, "ERRO, sem conexão com a internet, tente mais tarde.")
+                        }
                     }
                 },
                 containerColor = BackgroundColor,
@@ -575,8 +585,8 @@ fun HomeScreen(
                                     imageVector = Icons.Filled.Delete,
                                     contentDescription = "Delete icon",
                                     modifier = Modifier.clickable {
-                                        //homeViewModel.deleteBillFrestore(it.id)
                                         homeViewModel.sendBillToBeDeleted(it)
+                                        homeViewModel.checkConnection()
                                         showDeleteBillDialog = true
                                     },
                                     tint = Color.Gray

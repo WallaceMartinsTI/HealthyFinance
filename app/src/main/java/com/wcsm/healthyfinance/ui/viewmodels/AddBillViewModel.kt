@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.wcsm.healthyfinance.data.model.AddBillFormState
 import com.wcsm.healthyfinance.data.repository.BillRepository
+import com.wcsm.healthyfinance.data.repository.NetworkRepository
 import com.wcsm.healthyfinance.ui.util.parseDateFromString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddBillViewModel @Inject constructor(
     private val billRepository: BillRepository,
+    private val networkRepository: NetworkRepository,
     auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -30,7 +32,16 @@ class AddBillViewModel @Inject constructor(
     private val _billAdded = MutableStateFlow(false)
     val billAdded = _billAdded.asStateFlow()
 
+    private val _isConnected = MutableStateFlow(networkRepository.isConnected())
+    val isConnected = _isConnected.asStateFlow()
+
     private val currentUser = auth.currentUser
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            _isConnected.value = networkRepository.isConnected()
+        }
+    }
 
     fun updateAddBillFormState(newState: AddBillFormState) {
         _addBillFormState.value = newState

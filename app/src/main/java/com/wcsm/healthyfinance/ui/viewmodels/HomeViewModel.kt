@@ -1,13 +1,15 @@
 package com.wcsm.healthyfinance.ui.viewmodels
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.Bill
 import com.wcsm.healthyfinance.data.model.User
 import com.wcsm.healthyfinance.data.repository.BillRepository
+import com.wcsm.healthyfinance.data.repository.NetworkRepository
 import com.wcsm.healthyfinance.data.repository.UserRepository
 import com.wcsm.healthyfinance.ui.util.formatTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +23,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val billRepository: BillRepository,
+    private val networkRepository: NetworkRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -50,6 +53,9 @@ class HomeViewModel @Inject constructor(
     private var _isSignout = MutableStateFlow(false)
     val isSignout = _isSignout.asStateFlow()
 
+    private val _isConnected = MutableStateFlow(networkRepository.isConnected())
+    val isConnected = _isConnected.asStateFlow()
+
     private val currentUser = auth.currentUser
 
     init {
@@ -71,6 +77,16 @@ class HomeViewModel @Inject constructor(
     fun signOut() {
         auth.signOut()
         _isSignout.value = true
+    }
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            _isConnected.value = networkRepository.isConnected()
+        }
+    }
+
+    fun showDialog(context: Context, message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     fun updateUserValues(date: String = "") {

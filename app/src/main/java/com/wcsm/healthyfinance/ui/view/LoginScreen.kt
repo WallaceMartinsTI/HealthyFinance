@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -64,8 +65,11 @@ fun LoginScreen(
     exitApp: () -> Unit = {}
 ) {
     val loginFormState by loginViewModel.loginFormState.collectAsState()
+    val isConnected by loginViewModel.isConnected.collectAsState()
 
     var showFinishAppDialog by remember { mutableStateOf(false) }
+
+    var errorMessage by remember { mutableStateOf("") }
 
     BackHandler {
         showFinishAppDialog = true
@@ -223,13 +227,33 @@ fun LoginScreen(
                     }
                 }
 
+                if(errorMessage.isNotEmpty()) {
+                    ErrorContainer(
+                        errorMessage = errorMessage,
+                        errorIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.WifiOff,
+                                contentDescription = "Wifi Off Icon",
+                                tint = Color.White
+                            )
+                        }
+                    )
+                }
+
                 PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                     enabledText = "ENTRAR",
                     disabledText = "CARREGANDO...",
                     enabled = !loginFormState.isLoading,
                     onClick = {
-                        loginViewModel.signIn(loginFormState.email, loginFormState.password)
+                        errorMessage = ""
+
+                        loginViewModel.checkConnection()
+                        if(isConnected) {
+                            loginViewModel.signIn(loginFormState.email, loginFormState.password)
+                        } else {
+                            errorMessage = "Sem conexão no momento, tente mais tarde."
+                        }
                     }
                 )
 

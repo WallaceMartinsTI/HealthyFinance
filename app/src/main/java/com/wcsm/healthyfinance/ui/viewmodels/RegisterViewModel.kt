@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.wcsm.healthyfinance.data.model.RegisterFormState
 import com.wcsm.healthyfinance.data.model.User
+import com.wcsm.healthyfinance.data.repository.NetworkRepository
 import com.wcsm.healthyfinance.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,13 +19,23 @@ import kotlin.random.Random
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val networkRepository: NetworkRepository
 ) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
 
     private val _registerFormState = MutableStateFlow(RegisterFormState())
     val registerFormState = _registerFormState.asStateFlow()
+
+    private val _isConnected = MutableStateFlow(networkRepository.isConnected())
+    val isConnected = _isConnected.asStateFlow()
+
+    fun checkConnection() {
+        viewModelScope.launch {
+            _isConnected.value = networkRepository.isConnected()
+        }
+    }
 
     fun updateRegisterFormState(newState: RegisterFormState) {
         _registerFormState.value = newState
