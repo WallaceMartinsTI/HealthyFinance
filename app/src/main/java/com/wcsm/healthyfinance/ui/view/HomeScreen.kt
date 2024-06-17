@@ -27,8 +27,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -37,6 +39,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -283,343 +286,367 @@ fun HomeScreen(
             CircularLoading(size = 80.dp)
         }
     } else {
-        Column(
+        Scaffold(
             modifier = Modifier
                 .fillMaxSize()
                 .background(BackgroundColor),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+            topBar = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "HEALTHY FINANCE",
+                        color = Primary,
+                        fontSize = 32.sp,
+                        fontFamily = FontFamily.Default,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            bottomBar = {
+                MyBottomNavigationBar(navController, false)
+            }
+        ) { paddingValues ->
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .fillMaxSize()
+                    .background(BackgroundColor)
+                    .padding(paddingValues),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "HEALTHY FINANCE",
-                    color = Primary,
-                    fontSize = 32.sp,
-                    fontFamily = FontFamily.Default,
-                    fontWeight = FontWeight.Bold
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    /*Text(
+                        text = "HEALTHY FINANCE",
+                        color = Primary,
+                        fontSize = 32.sp,
+                        fontFamily = FontFamily.Default,
+                        fontWeight = FontWeight.Bold
+                    )*/
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "SALDO",
+                            color = Primary,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        val balanceColor = if(balance == 0.0) {
+                            InvestimentPrimary
+                        } else if(balance < 0) {
+                            ExpensePrimary
+                        } else {
+                            Primary
+                        }
+
+                        Text(
+                            text = balance.toBRL(),
+                            color = balanceColor,
+                            fontSize = 18.sp
+                        )
+                    }
+                    Divider()
+                }
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(BackgroundContainer),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "SALDO",
-                        color = Primary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    val balanceColor = if(balance == 0.0) {
-                        InvestimentPrimary
-                    } else if(balance < 0) {
-                        ExpensePrimary
-                    } else {
-                        Primary
-                    }
-
-                    Text(
-                        text = balance.toBRL(),
-                        color = balanceColor,
-                        fontSize = 18.sp
-                    )
-                }
-                Divider()
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(BackgroundContainer),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                if(showDatePickerDialog) {
-                    DatePickerDialog(
-                        onDismissRequest = {
-                            showDatePickerDialog = false
-                        },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    datePickerState
-                                        .selectedDateMillis?.let { millis ->
-                                            selectedDate = millis.toBrazilianDateFormat()
-                                        }
-                                    showDatePickerDialog = false
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Primary
-                                )
-                            ) {
-                                Text(
-                                    text = "Escolher data"
-                                )
+                    if(showDatePickerDialog) {
+                        DatePickerDialog(
+                            onDismissRequest = {
+                                showDatePickerDialog = false
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        datePickerState
+                                            .selectedDateMillis?.let { millis ->
+                                                selectedDate = millis.toBrazilianDateFormat()
+                                            }
+                                        showDatePickerDialog = false
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Primary
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Escolher data"
+                                    )
+                                }
                             }
-                        }
-                    ) {
-                        DatePicker(
-                            state = datePickerState,
-                            showModeToggle = false,
-                            colors = DatePickerDefaults.colors(
-                                headlineContentColor = Primary,
-                                weekdayContentColor = Primary,
-                                currentYearContentColor = Primary,
-                                selectedYearContainerColor = Primary,
-                                disabledDayContentColor = Color.Red,
-                                selectedDayContainerColor = Primary,
-                                todayContentColor = Primary,
-                                todayDateBorderColor = Primary
+                        ) {
+                            DatePicker(
+                                state = datePickerState,
+                                showModeToggle = false,
+                                colors = DatePickerDefaults.colors(
+                                    headlineContentColor = Primary,
+                                    weekdayContentColor = Primary,
+                                    currentYearContentColor = Primary,
+                                    selectedYearContainerColor = Primary,
+                                    disabledDayContentColor = Color.Red,
+                                    selectedDayContainerColor = Primary,
+                                    todayContentColor = Primary,
+                                    todayDateBorderColor = Primary
+                                )
                             )
-                        )
+                        }
                     }
-                }
 
-                OutlinedTextField(
-                    value = if(selectedDate.length > 3) selectedDate.substring(3)
-                    else selectedDate,
-                    onValueChange = {},
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(4.dp)
-                        .onFocusEvent {
-                            if (it.isFocused) {
-                                showDatePickerDialog = true
-                                focusManager.clearFocus(force = true)
-                            }
-                        },
-                    textStyle = TextStyle(color = Color.LightGray),
-                    colors = outlinedTextFieldColors,
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.CalendarMonth,
-                            contentDescription = "Calendar icon",
-                            tint = Color.White
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.TouchApp,
-                            contentDescription = "Touch icon",
-                            tint = Color.White.copy(alpha = 0.5f)
-                        )
-                    },
-                    readOnly = true
-                )
-
-                if(selectedDate.isNotEmpty()) {
-                    Icon(
-                        imageVector = Icons.Default.Clear,
-                        contentDescription = "Clear icon",
+                    OutlinedTextField(
+                        value = if(selectedDate.length > 3) selectedDate.substring(3)
+                        else selectedDate,
+                        onValueChange = {},
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .clip(RoundedCornerShape(25.dp))
-                            .clickable { selectedDate = "" },
-                        tint = Color.Gray
+                            .weight(1f)
+                            .padding(4.dp)
+                            .onFocusEvent {
+                                if (it.isFocused) {
+                                    showDatePickerDialog = true
+                                    focusManager.clearFocus(force = true)
+                                }
+                            },
+                        textStyle = TextStyle(color = Color.LightGray),
+                        colors = outlinedTextFieldColors,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.CalendarMonth,
+                                contentDescription = "Calendar icon",
+                                tint = Color.White
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.TouchApp,
+                                contentDescription = "Touch icon",
+                                tint = Color.White.copy(alpha = 0.5f)
+                            )
+                        },
+                        readOnly = true
                     )
+
+                    if(selectedDate.isNotEmpty()) {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear icon",
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .clip(RoundedCornerShape(25.dp))
+                                .clickable { selectedDate = "" },
+                            tint = Color.Gray
+                        )
+                    }
                 }
-            }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            ) {
-                BillContainer(
-                    modifier = Modifier.padding(4.dp),
-                    title = "Receita",
-                    value = incomes,
-                    arrowEndIcon = true,
-                    isSelected = true,
-                    onClick = {
-                        navController.navigate(Screen.Detail.route + "/INCOME")
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                BillContainer(
-                    modifier = Modifier.padding(4.dp),
-                    title = "Gastos",
-                    value = expenses,
-                    arrowEndIcon = true,
-                    isSelected = true,
-                    onClick = {
-                        navController.navigate(Screen.Detail.route + "/EXPENSE")
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                BillContainer(
-                    modifier = Modifier.padding(4.dp),
-                    title = "Investimento",
-                    value = investments,
-                    arrowEndIcon = true,
-                    isSelected = true,
-                    onClick = {
-                        navController.navigate(Screen.Detail.route + "/INVESTMENT")
-                    }
-                )
-            }
-
-            AnimatedVisibility(visible = showGraphic) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(250.dp),
+                        .padding(8.dp),
                 ) {
+                    BillContainer(
+                        modifier = Modifier.padding(4.dp),
+                        title = "Receita",
+                        value = incomes,
+                        arrowEndIcon = true,
+                        isSelected = true,
+                        onClick = {
+                            navController.navigate(Screen.Detail.route + "/INCOME")
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    BillContainer(
+                        modifier = Modifier.padding(4.dp),
+                        title = "Gastos",
+                        value = expenses,
+                        arrowEndIcon = true,
+                        isSelected = true,
+                        onClick = {
+                            navController.navigate(Screen.Detail.route + "/EXPENSE")
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    BillContainer(
+                        modifier = Modifier.padding(4.dp),
+                        title = "Investimento",
+                        value = investments,
+                        arrowEndIcon = true,
+                        isSelected = true,
+                        onClick = {
+                            navController.navigate(Screen.Detail.route + "/INVESTMENT")
+                        }
+                    )
+                }
+
+                AnimatedVisibility(visible = showGraphic) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                            .fillMaxWidth()
+                            .height(250.dp),
                     ) {
-                        if(isUserWithoutValues) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if(isUserWithoutValues) {
+                                Text(
+                                    text = "Registre algumas contas para começar a ver o gráfico.",
+                                    color = Color(0xFFFFD700),
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(16.dp),
+                                )
+                            } else {
+                                if(showGraphic) {
+                                    BarChartScreen(incomePercentage, expensePercentage, investmentPercentage)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Text(
+                        text = "Histórico",
+                        color = Color.White,
+                        modifier = Modifier.padding(bottom = 4.dp, end = 4.dp)
+                    )
+
+                    Icon(
+                        imageVector = if(showGraphic) Icons.Filled.KeyboardArrowUp
+                        else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = "Arrow icon",
+                        modifier = Modifier.clickable {
+                            homeViewModel.sendShowGraphic(!showGraphic)
+                        },
+                        tint = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        imageVector = Icons.Filled.ChangeCircle,
+                        contentDescription = "Change icon",
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .clickable {
+                                isReversedBillsHistoric = !isReversedBillsHistoric
+                            },
+                        tint = Color.White.copy(alpha = 0.8f)
+                    )
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = 8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(BackgroundContainer)
+                        .padding(top = 8.dp, bottom = 12.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = if(isHistoricEmpty) Arrangement.Center else Arrangement.Top
+                ) {
+                    if(isHistoricEmpty) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
-                                text = "Registre algumas contas para começar a ver o gráfico.",
+                                text = "Você ainda não tem contas registradas.",
                                 color = Color(0xFFFFD700),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier.padding(16.dp),
                             )
-                        } else {
-                            if(showGraphic) {
-                                BarChartScreen(incomePercentage, expensePercentage, investmentPercentage)
+                        }
+                    } else {
+                        homeViewModel.billsToShow(
+                            bills = userBills,
+                            reversed = isReversedBillsHistoric,
+                            date = selectedDate
+                        ).forEach {
+                            Column (
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 12.dp)
+                            ) {
+                                val color = when(it.billCategory.type) {
+                                    HistoryItemType.INCOME.toString() -> Primary
+                                    HistoryItemType.EXPENSE.toString() -> ExpensePrimary
+                                    HistoryItemType.INVESTMENT.toString() -> InvestimentPrimary
+                                    else -> Color.Transparent
+                                }
+
+                                Row {
+                                    Text(
+                                        text = it.description,
+                                        modifier = Modifier.weight(1f),
+                                        color = color,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Filled.Delete,
+                                        contentDescription = "Delete icon",
+                                        modifier = Modifier.clickable {
+                                            homeViewModel.sendBillToBeDeleted(it)
+                                            homeViewModel.checkConnection()
+                                            showDeleteBillDialog = true
+                                        },
+                                        tint = Color.Gray
+                                    )
+                                }
+
+                                Row {
+                                    Text(
+                                        text = it.value.toBRL(),
+                                        color = color,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    Text(
+                                        text = it.date.toDate().time.toBrazilianDateFormat(),
+                                        color = color,
+                                    )
+                                }
                             }
+
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.White)
+                                    .height(2.dp)
+                            )
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(4.dp))
             }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            ) {
-                Text(
-                    text = "Histórico",
-                    color = Color.White,
-                    modifier = Modifier.padding(bottom = 4.dp, end = 4.dp)
-                )
-
-                Icon(
-                    imageVector = if(showGraphic) Icons.Filled.KeyboardArrowUp
-                    else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = "Arrow icon",
-                    modifier = Modifier.clickable {
-                        homeViewModel.sendShowGraphic(!showGraphic)
-                    },
-                    tint = Color.White
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Icon(
-                    imageVector = Icons.Filled.ChangeCircle,
-                    contentDescription = "Change icon",
-                    modifier = Modifier
-                        .padding(end = 8.dp)
-                        .clickable {
-                            isReversedBillsHistoric = !isReversedBillsHistoric
-                        },
-                    tint = Color.White.copy(alpha = 0.8f)
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(BackgroundContainer)
-                    .padding(top = 8.dp, bottom = 12.dp)
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = if(isHistoricEmpty) Arrangement.Center else Arrangement.Top
-            ) {
-                if(isHistoricEmpty) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Você ainda não tem contas registradas.",
-                            color = Color(0xFFFFD700),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp),
-                        )
-                    }
-                } else {
-                    homeViewModel.billsToShow(
-                        bills = userBills,
-                        reversed = isReversedBillsHistoric,
-                        date = selectedDate
-                    ).forEach {
-                        Column (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp, vertical = 12.dp)
-                        ) {
-                            val color = when(it.billCategory.type) {
-                                HistoryItemType.INCOME.toString() -> Primary
-                                HistoryItemType.EXPENSE.toString() -> ExpensePrimary
-                                HistoryItemType.INVESTMENT.toString() -> InvestimentPrimary
-                                else -> Color.Transparent
-                            }
-
-                            Row {
-                                Text(
-                                    text = it.description,
-                                    modifier = Modifier.weight(1f),
-                                    color = color,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
-                                Icon(
-                                    imageVector = Icons.Filled.Delete,
-                                    contentDescription = "Delete icon",
-                                    modifier = Modifier.clickable {
-                                        homeViewModel.sendBillToBeDeleted(it)
-                                        homeViewModel.checkConnection()
-                                        showDeleteBillDialog = true
-                                    },
-                                    tint = Color.Gray
-                                )
-                            }
-
-                            Row {
-                                Text(
-                                    text = it.value.toBRL(),
-                                    color = color,
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                Text(
-                                    text = it.date.toDate().time.toBrazilianDateFormat(),
-                                    color = color,
-                                )
-                            }
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.White)
-                                .height(2.dp)
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            MyBottomNavigationBar(navController, false)
         }
+
     }
 }

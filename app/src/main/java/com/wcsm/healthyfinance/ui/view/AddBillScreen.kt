@@ -58,6 +58,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -228,129 +229,174 @@ fun AddBillScreen(
         navController.navigate(Screen.Home.route)
     }
 
-    Column(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundColor),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            MyTopAppBar(returnIcon = true) {
-                navController.navigate(Screen.Home.route)
+        topBar = {
+            Box(contentAlignment = Alignment.Center) {
+                MyTopAppBar(returnIcon = true) {
+                    navController.navigate(Screen.Home.route)
+                }
+                Text(
+                    text = "Cadastro",
+                    color = Color.White,
+                    fontSize = 24.sp
+                )
             }
-            Text(
-                text = "Cadastro",
-                color = Color.White,
-                fontSize = 24.sp
-            )
+        },
+        bottomBar = {
+            MyBottomNavigationBar(navController = navController)
         }
-
-        Row(
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize()
+                .background(BackgroundColor)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SimpleBill(
-                title = "Receita",
-                color = Primary,
-                selected = addBillFormState.type == HistoryItemType.INCOME.toString(),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                onClick = {
-                    addBillViewModel.updateAddBillFormState(
-                        addBillFormState.copy(
-                            type = HistoryItemType.INCOME.toString(),
-                            description = ""
-                        )
-                    )
-                    category = "Selecione uma categoria"
-                    selectedDate = ""
-                    value = "0"
-                    errorMessage = ""
-                }
-            )
-
-            SimpleBill(
-                title = "Gastos",
-                color = ExpensePrimary,
-                selected = addBillFormState.type == HistoryItemType.EXPENSE.toString(),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                onClick = {
-                    addBillViewModel.updateAddBillFormState(
-                        addBillFormState.copy(
-                            type = HistoryItemType.EXPENSE.toString(),
-                            description = ""
-                        )
-                    )
-                    switchChecked = false
-                    installment = "0"
-                    category = "Selecione uma categoria"
-                    selectedDate = ""
-                    value = "0"
-                    errorMessage = ""
-                }
-            )
-
-            SimpleBill(
-                title = "Investimento",
-                color = InvestimentPrimary,
-                selected = addBillFormState.type == HistoryItemType.INVESTMENT.toString(),
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                onClick = {
-                    addBillViewModel.updateAddBillFormState(
-                        addBillFormState.copy(
-                            type = HistoryItemType.INVESTMENT.toString(),
-                            description = ""
-                        )
-                    )
-                    category = "Selecione uma categoria"
-                    selectedDate = ""
-                    value = "0"
-                    errorMessage = ""
-                }
-            )
-        }
-
-        if(addBillFormState.isLoading) {
-            Column(
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(8.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CircularLoading(size = 80.dp)
+                SimpleBill(
+                    title = "Receita",
+                    color = Primary,
+                    selected = addBillFormState.type == HistoryItemType.INCOME.toString(),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    onClick = {
+                        addBillViewModel.updateAddBillFormState(
+                            addBillFormState.copy(
+                                type = HistoryItemType.INCOME.toString(),
+                                description = ""
+                            )
+                        )
+                        category = "Selecione uma categoria"
+                        selectedDate = ""
+                        value = "0"
+                        errorMessage = ""
+                    }
+                )
+
+                SimpleBill(
+                    title = "Gastos",
+                    color = ExpensePrimary,
+                    selected = addBillFormState.type == HistoryItemType.EXPENSE.toString(),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    onClick = {
+                        addBillViewModel.updateAddBillFormState(
+                            addBillFormState.copy(
+                                type = HistoryItemType.EXPENSE.toString(),
+                                description = ""
+                            )
+                        )
+                        switchChecked = false
+                        installment = "0"
+                        category = "Selecione uma categoria"
+                        selectedDate = ""
+                        value = "0"
+                        errorMessage = ""
+                    }
+                )
+
+                SimpleBill(
+                    title = "Investimento",
+                    color = InvestimentPrimary,
+                    selected = addBillFormState.type == HistoryItemType.INVESTMENT.toString(),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    onClick = {
+                        addBillViewModel.updateAddBillFormState(
+                            addBillFormState.copy(
+                                type = HistoryItemType.INVESTMENT.toString(),
+                                description = ""
+                            )
+                        )
+                        category = "Selecione uma categoria"
+                        selectedDate = ""
+                        value = "0"
+                        errorMessage = ""
+                    }
+                )
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
+
+            if(addBillFormState.isLoading) {
                 Column(
-                    modifier = Modifier.width(280.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AddBillTextFieldWithError(
-                        modifier = Modifier.focusRequester(valueFocusRequest),
-                        fieldName = "Valor",
-                        value = value,
-                        onValueChange = {newValue ->
-                            if(newValue.all { it.isDigit() }) {
-                                value = newValue.ifEmpty {
-                                    ""
+                    CircularLoading(size = 80.dp)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Column(
+                        modifier = Modifier.width(280.dp)
+                    ) {
+                        AddBillTextFieldWithError(
+                            modifier = Modifier.focusRequester(valueFocusRequest),
+                            fieldName = "Valor",
+                            value = value,
+                            onValueChange = {newValue ->
+                                if(newValue.all { it.isDigit() }) {
+                                    value = newValue.ifEmpty {
+                                        ""
+                                    }
+                                }
+                            },
+                            errorMessage = addBillFormState.valueErrorMessage,
+                            visualTransformation = CurrencyVisualTransformation(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            unfocusedLabelColorExpression = addBillFormState.value.isNotEmpty(),
+                            trailingIcon = {
+                                if(value != "0") {
+                                    if(value != "") {
+                                        Icon(
+                                            imageVector = Icons.Filled.Clear,
+                                            contentDescription = "Clear icon",
+                                            tint = Color.Gray,
+                                            modifier = Modifier
+                                                .size(28.dp)
+                                                .clickable {
+                                                    value = "0"
+                                                    valueFocusRequest.requestFocus()
+                                                }
+                                        )
+                                    }
                                 }
                             }
-                        },
-                        errorMessage = addBillFormState.valueErrorMessage,
-                        visualTransformation = CurrencyVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        unfocusedLabelColorExpression = addBillFormState.value.isNotEmpty(),
-                        trailingIcon = {
-                            if(value != "0") {
-                                if(value != "") {
+                        )
+
+                        AddBillTextFieldWithError(
+                            modifier = Modifier.focusRequester(descriptionFocusRequest),
+                            fieldName = "Descrição",
+                            label = "Descrição",
+                            value = addBillFormState.description,
+                            onValueChange = { newValue ->
+                                if(newValue.length <= 30) {
+                                    addBillViewModel.updateAddBillFormState(
+                                        addBillFormState.copy(
+                                            description = newValue
+                                        )
+                                    )
+                                }
+                            },
+                            isError = addBillFormState.descriptionErrorMessage != null,
+                            errorMessage = addBillFormState.descriptionErrorMessage,
+                            unfocusedLabelColorExpression = addBillFormState.description.isNotEmpty(),
+                            trailingIcon = {
+                                if(addBillFormState.description != "") {
                                     Icon(
                                         imageVector = Icons.Filled.Clear,
                                         contentDescription = "Clear icon",
@@ -358,379 +404,343 @@ fun AddBillScreen(
                                         modifier = Modifier
                                             .size(28.dp)
                                             .clickable {
-                                                value = "0"
-                                                valueFocusRequest.requestFocus()
-                                            }
-                                    )
-                                }
-                            }
-                        }
-                    )
-
-                    AddBillTextFieldWithError(
-                        modifier = Modifier.focusRequester(descriptionFocusRequest),
-                        fieldName = "Descrição",
-                        label = "Descrição",
-                        value = addBillFormState.description,
-                        onValueChange = { newValue ->
-                            if(newValue.length <= 30) {
-                                addBillViewModel.updateAddBillFormState(
-                                    addBillFormState.copy(
-                                        description = newValue
-                                    )
-                                )
-                            }
-                        },
-                        isError = addBillFormState.descriptionErrorMessage != null,
-                        errorMessage = addBillFormState.descriptionErrorMessage,
-                        unfocusedLabelColorExpression = addBillFormState.description.isNotEmpty(),
-                        trailingIcon = {
-                            if(addBillFormState.description != "") {
-                                Icon(
-                                    imageVector = Icons.Filled.Clear,
-                                    contentDescription = "Clear icon",
-                                    tint = Color.Gray,
-                                    modifier = Modifier
-                                        .size(28.dp)
-                                        .clickable {
-                                            addBillViewModel.updateAddBillFormState(
-                                                addBillFormState.copy(
-                                                    description = ""
+                                                addBillViewModel.updateAddBillFormState(
+                                                    addBillFormState.copy(
+                                                        description = ""
+                                                    )
                                                 )
-                                            )
-                                            descriptionFocusRequest.requestFocus()
-                                        }
-                                )
-                            }
-                        },
-                        supportingText = {
-                            Text(
-                                text = "${addBillFormState.description.length} / 50",
-                                modifier = Modifier.fillMaxWidth(),
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.End
-                            )
-                        },
-                        singleLine = true
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
-                        text = "Categoria",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = Color.White,
-                    )
-
-                    Box {
-                        ExposedDropdownMenuBox(
-                            expanded = categoryExpanded,
-                            onExpandedChange = { categoryExpanded = !categoryExpanded }
-                        ) {
-                            OutlinedTextField(
-                                modifier = Modifier.menuAnchor(),
-                                value = category,
-                                onValueChange = {
-                                    categoryExpanded = !categoryExpanded
-                                },
-                                textStyle = TextStyle(color = Color.LightGray),
-                                colors = outlinedTextFieldColors,
-                                singleLine = true,
-                                trailingIcon = {
-                                    Icon(
-                                        imageVector =
-                                        if(categoryExpanded) Icons.Filled.KeyboardArrowUp
-                                        else Icons.Filled.KeyboardArrowDown,
-                                        contentDescription = "Add icon",
-                                        tint = Color.Gray
-                                    )
-                                },
-                                readOnly = true,
-                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None)
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = categoryExpanded,
-                                onDismissRequest = { categoryExpanded = false }
-                            ) {
-                                val listToRender = when(addBillFormState.type.toHistoryItemType()) {
-                                    HistoryItemType.INCOME -> incomeCategoryItems
-                                    HistoryItemType.EXPENSE -> expenseCategoryItems
-                                    HistoryItemType.INVESTMENT -> investmentCategoryItems
-                                }
-
-                                listToRender.forEach {
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(text = it.title)
-                                        },
-                                        onClick = {
-                                            category = it.title
-                                            categoryExpanded = false
-                                        },
-                                        trailingIcon = {
-                                            Icon(
-                                                imageVector = it.icon,
-                                                contentDescription = "${it.title} icon"
-                                            )
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    if(addBillFormState.categoryErrorMessage != null) {
-                        ErrorContainer(errorMessage = addBillFormState.categoryErrorMessage!!)
-                    }
-
-                    Text(
-                        modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
-                        text = "Data",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = Color.White,
-                        textAlign = TextAlign.Start
-                    )
-
-                    if(showDatePickerDialog) {
-                        DatePickerDialog(
-                            onDismissRequest = {
-                                showDatePickerDialog = false
-                                focusManager.clearFocus(force = true)
-                            },
-                            confirmButton = {
-                                Button(
-                                    onClick = {
-                                        datePickerState
-                                            .selectedDateMillis?.let { millis ->
-                                                selectedDate = millis.toBrazilianDateFormat()
+                                                descriptionFocusRequest.requestFocus()
                                             }
-                                        showDatePickerDialog = false
-                                        focusManager.clearFocus(force = true)
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Primary
                                     )
-                                ) {
-                                    Text(
-                                        text = "Escolher data"
-                                    )
-                                }
-                            }
-                        ) {
-                            DatePicker(
-                                state = datePickerState,
-                                showModeToggle = false,
-                                colors = DatePickerDefaults.colors(
-                                    headlineContentColor = Primary,
-                                    weekdayContentColor = Primary,
-                                    currentYearContentColor = Primary,
-                                    selectedYearContainerColor = Primary,
-                                    disabledDayContentColor = Color.Red,
-                                    selectedDayContainerColor = Primary,
-                                    todayContentColor = Primary,
-                                    todayDateBorderColor = Primary
-                                )
-                            )
-                        }
-                    }
-
-                    OutlinedTextField(
-                        value = selectedDate,
-                        onValueChange = {},
-                        modifier = Modifier
-                            .onFocusEvent {
-                                if(it.isFocused) {
-                                    showDatePickerDialog = true
                                 }
                             },
-                        textStyle = TextStyle(color = Color.LightGray),
-                        colors = outlinedTextFieldColors,
-                        isError = dateFieldErrorMessage.isNotEmpty(),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.CalendarMonth,
-                                contentDescription = "Account Circle",
-                                tint = Color.Gray
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Edit Pencil",
-                                tint = Color.Gray
-                            )
-                        },
-                        readOnly = true
-                    )
+                            supportingText = {
+                                Text(
+                                    text = "${addBillFormState.description.length} / 50",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.End
+                                )
+                            },
+                            singleLine = true
+                        )
 
-                    if(dateFieldErrorMessage.isNotEmpty()) {
-                        ErrorContainer(errorMessage = dateFieldErrorMessage)
-                    }
+                        Text(
+                            modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
+                            text = "Categoria",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                            color = Color.White,
+                        )
 
-                    if(isExpenseScreen) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
-                                text = "Parcelamento",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp,
-                                color = Color.White,
-                            )
+                        Box {
+                            ExposedDropdownMenuBox(
+                                expanded = categoryExpanded,
+                                onExpandedChange = { categoryExpanded = !categoryExpanded }
+                            ) {
+                                OutlinedTextField(
+                                    modifier = Modifier.menuAnchor(),
+                                    value = category,
+                                    onValueChange = {
+                                        categoryExpanded = !categoryExpanded
+                                    },
+                                    textStyle = TextStyle(color = Color.LightGray),
+                                    colors = outlinedTextFieldColors,
+                                    singleLine = true,
+                                    trailingIcon = {
+                                        Icon(
+                                            imageVector =
+                                            if(categoryExpanded) Icons.Filled.KeyboardArrowUp
+                                            else Icons.Filled.KeyboardArrowDown,
+                                            contentDescription = "Add icon",
+                                            tint = Color.Gray
+                                        )
+                                    },
+                                    readOnly = true,
+                                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None)
+                                )
 
-                            Switch(
-                                modifier = Modifier.scale(1f),
-                                checked = switchChecked,
-                                onCheckedChange = {
-                                    switchChecked = !switchChecked
-                                    if(!switchChecked) {
-                                        installment = "0"
+                                ExposedDropdownMenu(
+                                    expanded = categoryExpanded,
+                                    onDismissRequest = { categoryExpanded = false }
+                                ) {
+                                    val listToRender = when(addBillFormState.type.toHistoryItemType()) {
+                                        HistoryItemType.INCOME -> incomeCategoryItems
+                                        HistoryItemType.EXPENSE -> expenseCategoryItems
+                                        HistoryItemType.INVESTMENT -> investmentCategoryItems
                                     }
-                                },
-                                colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color.White,
-                                    checkedTrackColor = Primary,
-                                    uncheckedThumbColor = Color.Gray,
-                                    uncheckedTrackColor = BackgroundContainer,
-                                ),
-                            )
+
+                                    listToRender.forEach {
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(text = it.title)
+                                            },
+                                            onClick = {
+                                                category = it.title
+                                                categoryExpanded = false
+                                            },
+                                            trailingIcon = {
+                                                Icon(
+                                                    imageVector = it.icon,
+                                                    contentDescription = "${it.title} icon"
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
+                            }
                         }
 
-                        if(switchChecked) {
-                            Box {
-                                ExposedDropdownMenuBox(
-                                    expanded = installmentExpanded,
-                                    onExpandedChange = { installmentExpanded = !installmentExpanded }
-                                ) {
-                                    OutlinedTextField(
-                                        modifier = Modifier.menuAnchor(),
-                                        value = installment,
-                                        onValueChange = {
-                                            installmentExpanded = !installmentExpanded
-                                        },
-                                        textStyle = TextStyle(color = Color.LightGray),
-                                        colors = outlinedTextFieldColors,
-                                        singleLine = true,
-                                        isError = installmentFieldErrorMessage.isNotEmpty(),
-                                        trailingIcon = {
-                                            Icon(
-                                                imageVector =
-                                                if(installmentExpanded) Icons.Filled.KeyboardArrowUp
-                                                else Icons.Filled.KeyboardArrowDown,
-                                                contentDescription = "Add icon",
-                                                tint = Color.Gray
-                                            )
-                                        },
-                                        readOnly = true,
-                                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None)
-                                    )
+                        if(addBillFormState.categoryErrorMessage != null) {
+                            ErrorContainer(errorMessage = addBillFormState.categoryErrorMessage!!)
+                        }
 
-                                    ExposedDropdownMenu(
-                                        expanded = installmentExpanded,
-                                        onDismissRequest = { installmentExpanded = false }
-                                    ) {
-                                        installmentOptions.forEach {
-                                            DropdownMenuItem(
-                                                text = {
-                                                    Text(text = it)
-                                                },
-                                                onClick = {
-                                                    installment = it
-                                                    installmentExpanded = false
+                        Text(
+                            modifier = Modifier.padding(top = 24.dp, bottom = 8.dp),
+                            text = "Data",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            textAlign = TextAlign.Start
+                        )
+
+                        if(showDatePickerDialog) {
+                            DatePickerDialog(
+                                onDismissRequest = {
+                                    showDatePickerDialog = false
+                                    focusManager.clearFocus(force = true)
+                                },
+                                confirmButton = {
+                                    Button(
+                                        onClick = {
+                                            datePickerState
+                                                .selectedDateMillis?.let { millis ->
+                                                    selectedDate = millis.toBrazilianDateFormat()
                                                 }
-                                            )
+                                            showDatePickerDialog = false
+                                            focusManager.clearFocus(force = true)
+                                        },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Primary
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "Escolher data"
+                                        )
+                                    }
+                                }
+                            ) {
+                                DatePicker(
+                                    state = datePickerState,
+                                    showModeToggle = false,
+                                    colors = DatePickerDefaults.colors(
+                                        headlineContentColor = Primary,
+                                        weekdayContentColor = Primary,
+                                        currentYearContentColor = Primary,
+                                        selectedYearContainerColor = Primary,
+                                        disabledDayContentColor = Color.Red,
+                                        selectedDayContainerColor = Primary,
+                                        todayContentColor = Primary,
+                                        todayDateBorderColor = Primary
+                                    )
+                                )
+                            }
+                        }
+
+                        OutlinedTextField(
+                            value = selectedDate,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .onFocusEvent {
+                                    if(it.isFocused) {
+                                        showDatePickerDialog = true
+                                    }
+                                },
+                            textStyle = TextStyle(color = Color.LightGray),
+                            colors = outlinedTextFieldColors,
+                            isError = dateFieldErrorMessage.isNotEmpty(),
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.CalendarMonth,
+                                    contentDescription = "Account Circle",
+                                    tint = Color.Gray
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit Pencil",
+                                    tint = Color.Gray
+                                )
+                            },
+                            readOnly = true
+                        )
+
+                        if(dateFieldErrorMessage.isNotEmpty()) {
+                            ErrorContainer(errorMessage = dateFieldErrorMessage)
+                        }
+
+                        if(isExpenseScreen) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
+                                    text = "Parcelamento",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    color = Color.White,
+                                )
+
+                                Switch(
+                                    modifier = Modifier.scale(1f),
+                                    checked = switchChecked,
+                                    onCheckedChange = {
+                                        switchChecked = !switchChecked
+                                        if(!switchChecked) {
+                                            installment = "0"
+                                        }
+                                    },
+                                    colors = SwitchDefaults.colors(
+                                        checkedThumbColor = Color.White,
+                                        checkedTrackColor = Primary,
+                                        uncheckedThumbColor = Color.Gray,
+                                        uncheckedTrackColor = BackgroundContainer,
+                                    ),
+                                )
+                            }
+
+                            if(switchChecked) {
+                                Box {
+                                    ExposedDropdownMenuBox(
+                                        expanded = installmentExpanded,
+                                        onExpandedChange = { installmentExpanded = !installmentExpanded }
+                                    ) {
+                                        OutlinedTextField(
+                                            modifier = Modifier.menuAnchor(),
+                                            value = installment,
+                                            onValueChange = {
+                                                installmentExpanded = !installmentExpanded
+                                            },
+                                            textStyle = TextStyle(color = Color.LightGray),
+                                            colors = outlinedTextFieldColors,
+                                            singleLine = true,
+                                            isError = installmentFieldErrorMessage.isNotEmpty(),
+                                            trailingIcon = {
+                                                Icon(
+                                                    imageVector =
+                                                    if(installmentExpanded) Icons.Filled.KeyboardArrowUp
+                                                    else Icons.Filled.KeyboardArrowDown,
+                                                    contentDescription = "Add icon",
+                                                    tint = Color.Gray
+                                                )
+                                            },
+                                            readOnly = true,
+                                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.None)
+                                        )
+
+                                        ExposedDropdownMenu(
+                                            expanded = installmentExpanded,
+                                            onDismissRequest = { installmentExpanded = false }
+                                        ) {
+                                            installmentOptions.forEach {
+                                                DropdownMenuItem(
+                                                    text = {
+                                                        Text(text = it)
+                                                    },
+                                                    onClick = {
+                                                        installment = it
+                                                        installmentExpanded = false
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
-                            }
-                            if(installmentFieldErrorMessage.isNotEmpty()) {
-                                ErrorContainer(errorMessage = installmentFieldErrorMessage)
-                            }
+                                if(installmentFieldErrorMessage.isNotEmpty()) {
+                                    ErrorContainer(errorMessage = installmentFieldErrorMessage)
+                                }
 
-                            Spacer(modifier = Modifier.height(24.dp))
+                                Spacer(modifier = Modifier.height(24.dp))
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if(errorMessage.isNotEmpty()) {
-            ErrorContainer(
-                errorMessage = errorMessage,
-                errorIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.WifiOff,
-                        contentDescription = "Wifi Off Icon",
-                        tint = Color.White
-                    )
+            if(errorMessage.isNotEmpty()) {
+                ErrorContainer(
+                    errorMessage = errorMessage,
+                    errorIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.WifiOff,
+                            contentDescription = "Wifi Off Icon",
+                            tint = Color.White
+                        )
+                    }
+                )
+            }
+
+            PrimaryButton(
+                modifier = Modifier
+                    .width(280.dp)
+                    .padding(vertical = 24.dp),
+                enabled = !addBillFormState.isLoading,
+                enabledText = "CADASTRAR",
+                disabledText = "SALVANDO...",
+                onClick = {
+                    errorMessage = ""
+
+                    addBillViewModel.setBillAdded(false)
+
+                    if(value.isEmpty()) value = "0"
+
+                    dateFieldErrorMessage = ""
+                    installmentFieldErrorMessage = ""
+
+                    if(selectedDate.isEmpty()) {
+                        dateFieldErrorMessage = "Você deve informar uma data."
+                        focusManager.clearFocus(force = true)
+                        return@PrimaryButton
+                    }
+
+                    var installmentForDatabase = 0
+                    if(switchChecked) {
+                        if(installment == "Informe o número de parcelas") {
+                            installmentFieldErrorMessage = "Você deve informar as parcelas"
+                            return@PrimaryButton
+                        } else {
+                            val formatedInstallment = installment.substring(0, installment.length - 1).toIntOrNull()
+                            if(formatedInstallment != null) {
+                                installmentForDatabase = formatedInstallment
+                            } else {
+                                installmentFieldErrorMessage = "Informe uma parcela válida."
+                                return@PrimaryButton
+                            }
+                        }
+                    }
+
+                    addBillViewModel.checkConnection()
+
+                    if(isConnected) {
+                        addBillViewModel.updateAddBillFormState(
+                            addBillFormState.copy(
+                                value = value,
+                                category = category,
+                                installment = installmentForDatabase
+                            )
+                        )
+
+                        addBillViewModel.saveBill(selectedDate)
+                    } else {
+                        errorMessage = "Sem conexão no momento, tente mais tarde."
+                    }
                 }
             )
         }
-
-        PrimaryButton(
-            modifier = Modifier
-                .width(280.dp)
-                .padding(vertical = 24.dp),
-            enabled = !addBillFormState.isLoading,
-            enabledText = "CADASTRAR",
-            disabledText = "SALVANDO...",
-            onClick = {
-                errorMessage = ""
-
-                addBillViewModel.setBillAdded(false)
-
-                if(value.isEmpty()) value = "0"
-
-                dateFieldErrorMessage = ""
-                installmentFieldErrorMessage = ""
-
-                if(selectedDate.isEmpty()) {
-                    dateFieldErrorMessage = "Você deve informar uma data."
-                    focusManager.clearFocus(force = true)
-                    return@PrimaryButton
-                }
-
-                var installmentForDatabase = 0
-                if(switchChecked) {
-                    if(installment == "Informe o número de parcelas") {
-                        installmentFieldErrorMessage = "Você deve informar as parcelas"
-                        return@PrimaryButton
-                    } else {
-                        val formatedInstallment = installment.substring(0, installment.length - 1).toIntOrNull()
-                        if(formatedInstallment != null) {
-                            installmentForDatabase = formatedInstallment
-                        } else {
-                            installmentFieldErrorMessage = "Informe uma parcela válida."
-                            return@PrimaryButton
-                        }
-                    }
-                }
-
-                addBillViewModel.checkConnection()
-
-                if(isConnected) {
-                    addBillViewModel.updateAddBillFormState(
-                        addBillFormState.copy(
-                            value = value,
-                            category = category,
-                            installment = installmentForDatabase
-                        )
-                    )
-
-                    addBillViewModel.saveBill(selectedDate)
-                } else {
-                    errorMessage = "Sem conexão no momento, tente mais tarde."
-                }
-            }
-        )
-
-        MyBottomNavigationBar(navController = navController)
     }
 }
 

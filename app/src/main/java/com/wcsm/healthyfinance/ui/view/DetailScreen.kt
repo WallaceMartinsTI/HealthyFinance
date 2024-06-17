@@ -32,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
@@ -81,7 +83,7 @@ fun DetailScreen(
     navController: NavHostController,
     backStackEntry: NavBackStackEntry,
     detailViewModel: DetailViewModel = viewModel(),
-    homeViewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val initialBill = backStackEntry.arguments?.getString("billType")
 
@@ -146,326 +148,341 @@ fun DetailScreen(
         detailViewModel.sendChartChange()
     }
 
-    Column(
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundColor),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "E!CONTROL",
-                color = Primary,
-                fontSize = 32.sp,
-                fontFamily = FontFamily.Default,
-                fontWeight = FontWeight.Bold
-            )
-
+        topBar = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Saldo",
+                    text = "HEALTHY FINANCE",
                     color = Primary,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 4.dp)
-                )
-                val balanceColor = if(balance == 0.0) {
-                    InvestimentPrimary
-                } else if(balance < 0) {
-                    ExpensePrimary
-                } else {
-                    Primary
-                }
-                Text(
-                    text = balance.toBRL(),
-                    color = balanceColor,
-                    fontSize = 18.sp
+                    fontSize = 32.sp,
+                    fontFamily = FontFamily.Default,
+                    fontWeight = FontWeight.Bold
                 )
             }
-            Divider()
+        },
+        bottomBar = {
+            MyBottomNavigationBar(navController)
         }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(BackgroundContainer),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            if(showDatePickerDialog) {
-                DatePickerDialog(
-                    onDismissRequest = {
-                        showDatePickerDialog = false
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                datePickerState
-                                    .selectedDateMillis?.let { millis ->
-                                        selectedDate = millis.toBrazilianDateFormat()
-                                    }
-                                showDatePickerDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Primary
-                            )
-                        ) {
-                            Text(
-                                text = "Escolher data"
-                            )
-                        }
-                    }
-                ) {
-                    DatePicker(
-                        state = datePickerState,
-                        showModeToggle = false,
-                        colors = DatePickerDefaults.colors(
-                            headlineContentColor = Primary,
-                            weekdayContentColor = Primary,
-                            currentYearContentColor = Primary,
-                            selectedYearContainerColor = Primary,
-                            disabledDayContentColor = Color.Red,
-                            selectedDayContainerColor = Primary,
-                            todayContentColor = Primary,
-                            todayDateBorderColor = Primary
-                        )
-                    )
-                }
-            }
-
-            OutlinedTextField(
-                value = if(selectedDate.length > 3) selectedDate.substring(3)
-                else selectedDate,
-                label = {
-                    Text(
-                        text = "Filtro por mês",
-                        color = Color.Gray
-                    )
-                },
-                onValueChange = {},
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-                    .onFocusEvent {
-                        if (it.isFocused) {
-                            showDatePickerDialog = true
-                            focusManager.clearFocus(force = true)
-                        }
-                    },
-                textStyle = TextStyle(color = Color.LightGray),
-                colors = outlinedTextFieldColors,
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.CalendarMonth,
-                        contentDescription = "Calendar icon",
-                        tint = Color.White
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.TouchApp,
-                        contentDescription = "Touch icon",
-                        tint = Color.White.copy(alpha = 0.5f)
-                    )
-                },
-                readOnly = true
-            )
-
-            if(selectedDate.isNotEmpty()) {
-                Icon(
-                    imageVector = Icons.Default.Clear,
-                    contentDescription = "Clear icon",
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clip(RoundedCornerShape(25.dp))
-                        .clickable { selectedDate = "" },
-                    tint = Color.Gray
-                )
-            }
-        }
-
+    ) { paddingValues ->
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxSize()
+                .background(BackgroundColor)
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            BillContainer(
-                modifier = Modifier.padding(4.dp),
-                title = "Receita",
-                isSelected = historyType == HistoryItemType.INCOME,
-                showRadioButton = true,
-                isRadioButtonSelected =  historyType == HistoryItemType.INCOME,
-                value = incomes,
-                onClick = {
-                    detailViewModel.sendType(HistoryItemType.INCOME)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Saldo",
+                        color = Primary,
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    val balanceColor = if(balance == 0.0) {
+                        InvestimentPrimary
+                    } else if(balance < 0) {
+                        ExpensePrimary
+                    } else {
+                        Primary
+                    }
+                    Text(
+                        text = balance.toBRL(),
+                        color = balanceColor,
+                        fontSize = 18.sp
+                    )
                 }
-            )
+                Divider()
+            }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            BillContainer(
-                modifier = Modifier.padding(4.dp),
-                title = "Gastos",
-                isSelected = historyType == HistoryItemType.EXPENSE,
-                showRadioButton = true,
-                isRadioButtonSelected =  historyType == HistoryItemType.EXPENSE,
-                value = expenses,
-                onClick = {
-                    detailViewModel.sendType(HistoryItemType.EXPENSE)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            BillContainer(
-                modifier = Modifier.padding(4.dp),
-                title = "Investimento",
-                isSelected = historyType == HistoryItemType.INVESTMENT,
-                isRadioButtonSelected =  historyType == HistoryItemType.INVESTMENT,
-                showRadioButton = true,
-                value = investments,
-                onClick = {
-                    detailViewModel.sendType(HistoryItemType.INVESTMENT)
-                }
-            )
-        }
-
-        var filteredBillsBySelectedDate = mutableListOf<Bill>()
-        if(selectedDate.isNotEmpty()) {
-            val filteredDate =  if(selectedDate.length > 3) selectedDate.substring(3) else ""
-            if(filteredDate.isNotEmpty()) {
-                userBills.map { bill ->
-                    val formattedBillDate = formatTimestamp(bill.date)
-                    val billDate = if(formattedBillDate.length > 3) formattedBillDate.substring(3)
-                    else ""
-                    if(billDate.isNotEmpty()) {
-                        if(filteredDate == billDate) {
-                            filteredBillsBySelectedDate.add(bill)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(BackgroundContainer),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if(showDatePickerDialog) {
+                    DatePickerDialog(
+                        onDismissRequest = {
+                            showDatePickerDialog = false
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    datePickerState
+                                        .selectedDateMillis?.let { millis ->
+                                            selectedDate = millis.toBrazilianDateFormat()
+                                        }
+                                    showDatePickerDialog = false
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Primary
+                                )
+                            ) {
+                                Text(
+                                    text = "Escolher data"
+                                )
+                            }
                         }
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false,
+                            colors = DatePickerDefaults.colors(
+                                headlineContentColor = Primary,
+                                weekdayContentColor = Primary,
+                                currentYearContentColor = Primary,
+                                selectedYearContainerColor = Primary,
+                                disabledDayContentColor = Color.Red,
+                                selectedDayContainerColor = Primary,
+                                todayContentColor = Primary,
+                                todayDateBorderColor = Primary
+                            )
+                        )
                     }
                 }
-            }
-        } else {
-            filteredBillsBySelectedDate = userBills.toMutableList()
-        }
 
-        var bills = emptyList<Bill>()
-        val categoryTotals = mutableListOf<CategoryAndTotal>()
-
-        if(historyType != null) {
-
-            bills = filteredBillsBySelectedDate.filter { bill ->
-                bill.billCategory.type == historyType.toString()
-            }
-
-            val filteredBills = filteredBillsBySelectedDate.filter { bill ->
-                bill.billCategory.type == historyType.toString()
-            }
-
-            val groupedBills = filteredBills.groupBy { it.billCategory.name }
-            groupedBills.forEach { (categoryName, bills) ->
-                val totalValue = bills.sumOf { it.value }
-                categoryTotals.add(CategoryAndTotal(categoryName, totalValue))
-            }
-
-            val totalValue = when(historyType) {
-                HistoryItemType.INCOME -> incomes
-                HistoryItemType.EXPENSE -> expenses
-                HistoryItemType.INVESTMENT -> investments
-                else -> 0.0
-            }
-
-            if(totalValue != 0.0) {
-                val categoryTotalsWithPercentages = detailViewModel.calculateBillPercentages(
-                    totalValue = totalValue,
-                    categoryTotals = categoryTotals
+                OutlinedTextField(
+                    value = if(selectedDate.length > 3) selectedDate.substring(3)
+                    else selectedDate,
+                    label = {
+                        Text(
+                            text = "Filtro por mês",
+                            color = Color.Gray
+                        )
+                    },
+                    onValueChange = {},
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                        .onFocusEvent {
+                            if (it.isFocused) {
+                                showDatePickerDialog = true
+                                focusManager.clearFocus(force = true)
+                            }
+                        },
+                    textStyle = TextStyle(color = Color.LightGray),
+                    colors = outlinedTextFieldColors,
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.CalendarMonth,
+                            contentDescription = "Calendar icon",
+                            tint = Color.White
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Filled.TouchApp,
+                            contentDescription = "Touch icon",
+                            tint = Color.White.copy(alpha = 0.5f)
+                        )
+                    },
+                    readOnly = true
                 )
 
-                AnimatedVisibility(visible = showGraphic) {
-                    Box(
+                if(selectedDate.isNotEmpty()) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear icon",
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        PieChartScreen(historyType!!, chartChanged, categoryTotalsWithPercentages, selectedDate)
-                    }
-                }
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp)
-        ) {
-            Text(
-                text = "Detalhes",
-                color = Color.White,
-            )
-
-            Icon(
-                imageVector = if(showGraphic) Icons.Filled.KeyboardArrowUp
-                else Icons.Filled.KeyboardArrowDown,
-                contentDescription = "Arrow icon",
-                modifier = Modifier.clickable {
-                    detailViewModel.sendShowGraphic(!showGraphic)
-                },
-                tint = Color.White
-            )
-        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = 8.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(BackgroundContainer)
-                .padding(top = 8.dp, bottom = 12.dp)
-        ) {
-            if(categoryTotals.isNotEmpty()) {
-
-                items(categoryTotals) {
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 12.dp)
-                    ) {
-
-                        val color = when(historyType) {
-                            HistoryItemType.INCOME -> Primary
-                            HistoryItemType.EXPENSE -> ExpensePrimary
-                            HistoryItemType.INVESTMENT -> InvestimentPrimary
-                            else -> Color.Transparent
-                        }
-
-                        RowItem(bills, it, color, selectedDate, detailViewModel)
-                    }
-
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.White)
-                            .height(2.dp)
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(25.dp))
+                            .clickable { selectedDate = "" },
+                        tint = Color.Gray
                     )
                 }
             }
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                BillContainer(
+                    modifier = Modifier.padding(4.dp),
+                    title = "Receita",
+                    isSelected = historyType == HistoryItemType.INCOME,
+                    showRadioButton = true,
+                    isRadioButtonSelected =  historyType == HistoryItemType.INCOME,
+                    value = incomes,
+                    onClick = {
+                        detailViewModel.sendType(HistoryItemType.INCOME)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                BillContainer(
+                    modifier = Modifier.padding(4.dp),
+                    title = "Gastos",
+                    isSelected = historyType == HistoryItemType.EXPENSE,
+                    showRadioButton = true,
+                    isRadioButtonSelected =  historyType == HistoryItemType.EXPENSE,
+                    value = expenses,
+                    onClick = {
+                        detailViewModel.sendType(HistoryItemType.EXPENSE)
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                BillContainer(
+                    modifier = Modifier.padding(4.dp),
+                    title = "Investimento",
+                    isSelected = historyType == HistoryItemType.INVESTMENT,
+                    isRadioButtonSelected =  historyType == HistoryItemType.INVESTMENT,
+                    showRadioButton = true,
+                    value = investments,
+                    onClick = {
+                        detailViewModel.sendType(HistoryItemType.INVESTMENT)
+                    }
+                )
+            }
+
+            var filteredBillsBySelectedDate = mutableListOf<Bill>()
+            if(selectedDate.isNotEmpty()) {
+                val filteredDate =  if(selectedDate.length > 3) selectedDate.substring(3) else ""
+                if(filteredDate.isNotEmpty()) {
+                    userBills.map { bill ->
+                        val formattedBillDate = formatTimestamp(bill.date)
+                        val billDate = if(formattedBillDate.length > 3) formattedBillDate.substring(3)
+                        else ""
+                        if(billDate.isNotEmpty()) {
+                            if(filteredDate == billDate) {
+                                filteredBillsBySelectedDate.add(bill)
+                            }
+                        }
+                    }
+                }
+            } else {
+                filteredBillsBySelectedDate = userBills.toMutableList()
+            }
+
+            var bills = emptyList<Bill>()
+            val categoryTotals = mutableListOf<CategoryAndTotal>()
+
+            if(historyType != null) {
+
+                bills = filteredBillsBySelectedDate.filter { bill ->
+                    bill.billCategory.type == historyType.toString()
+                }
+
+                val filteredBills = filteredBillsBySelectedDate.filter { bill ->
+                    bill.billCategory.type == historyType.toString()
+                }
+
+                val groupedBills = filteredBills.groupBy { it.billCategory.name }
+                groupedBills.forEach { (categoryName, bills) ->
+                    val totalValue = bills.sumOf { it.value }
+                    categoryTotals.add(CategoryAndTotal(categoryName, totalValue))
+                }
+
+                val totalValue = when(historyType) {
+                    HistoryItemType.INCOME -> incomes
+                    HistoryItemType.EXPENSE -> expenses
+                    HistoryItemType.INVESTMENT -> investments
+                    else -> 0.0
+                }
+
+                if(totalValue != 0.0) {
+                    val categoryTotalsWithPercentages = detailViewModel.calculateBillPercentages(
+                        totalValue = totalValue,
+                        categoryTotals = categoryTotals
+                    )
+
+                    AnimatedVisibility(visible = showGraphic) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            PieChartScreen(historyType!!, chartChanged, categoryTotalsWithPercentages, selectedDate)
+                        }
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = "Detalhes",
+                    color = Color.White,
+                )
+
+                Icon(
+                    imageVector = if(showGraphic) Icons.Filled.KeyboardArrowUp
+                    else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = "Arrow icon",
+                    modifier = Modifier.clickable {
+                        detailViewModel.sendShowGraphic(!showGraphic)
+                    },
+                    tint = Color.White
+                )
+            }
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(BackgroundContainer)
+                    .padding(top = 8.dp, bottom = 12.dp)
+            ) {
+                if(categoryTotals.isNotEmpty()) {
+
+                    items(categoryTotals) {
+                        Row (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 12.dp)
+                        ) {
+
+                            val color = when(historyType) {
+                                HistoryItemType.INCOME -> Primary
+                                HistoryItemType.EXPENSE -> ExpensePrimary
+                                HistoryItemType.INVESTMENT -> InvestimentPrimary
+                                else -> Color.Transparent
+                            }
+
+                            RowItem(bills, it, color, selectedDate, detailViewModel)
+                        }
+
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White)
+                                .height(2.dp)
+                        )
+                    }
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MyBottomNavigationBar(navController)
     }
 }
 
