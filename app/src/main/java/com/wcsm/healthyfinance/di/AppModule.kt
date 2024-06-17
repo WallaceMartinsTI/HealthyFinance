@@ -2,10 +2,10 @@ package com.wcsm.healthyfinance.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.wcsm.healthyfinance.data.repository.LoginRepository
-import com.wcsm.healthyfinance.data.repository.LoginRepositoryImpl
-import com.wcsm.healthyfinance.data.repository.RegisterRepository
-import com.wcsm.healthyfinance.data.repository.RegisterRepositoryImpl
+import com.wcsm.healthyfinance.data.repository.BillRepository
+import com.wcsm.healthyfinance.data.repository.BillRepositoryImpl
+import com.wcsm.healthyfinance.data.repository.UserRepository
+import com.wcsm.healthyfinance.data.repository.UserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,17 +30,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(auth: FirebaseAuth): LoginRepository {
-        return LoginRepositoryImpl(auth)
+    fun provideUserRepository(auth: FirebaseAuth, firestore: FirebaseFirestore): UserRepository {
+        return UserRepositoryImpl(auth, firestore)
     }
 
     @Provides
     @Singleton
-    fun provideRegisterRepository(
-        auth: FirebaseAuth,
+    fun provideBillRepository(
         firestore: FirebaseFirestore
-    ): RegisterRepository {
-        return RegisterRepositoryImpl(auth, firestore)
+    ): BillRepository {
+        return BillRepositoryImpl(firestore)
     }
 
 }

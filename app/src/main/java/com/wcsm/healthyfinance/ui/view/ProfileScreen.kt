@@ -2,6 +2,7 @@ package com.wcsm.healthyfinance.ui.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -51,6 +53,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -100,6 +105,9 @@ fun ProfileScreen(
     var gender by rememberSaveable { mutableStateOf("") }
 
     var genderExpanded by remember { mutableStateOf(false) }
+    var isNameFocused by remember { mutableStateOf(false) }
+
+    val focusRequester = FocusRequester()
 
     var showDatePickerDialog by remember {
         mutableStateOf(false)
@@ -181,7 +189,7 @@ fun ProfileScreen(
                     enabledText = "SIM"
                 ) {
                     showConfirmDeleteAccountDialog = false
-                    profileViewModel.deleteUserFirestore(navController)
+                    profileViewModel.deleteUser(navController)
                 }
             },
             containerColor = BackgroundColor,
@@ -271,6 +279,11 @@ fun ProfileScreen(
                                 name = it
                             }
                         },
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .onFocusChanged { focusState ->
+                                isNameFocused = focusState.isFocused
+                            },
                         textStyle = TextStyle(color = Color.LightGray),
                         colors = outlinedTextFieldColors,
                         leadingIcon = {
@@ -281,11 +294,20 @@ fun ProfileScreen(
                             )
                         },
                         trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Edit Pencil",
-                                tint = Color.Gray
-                            )
+                            if(isNameFocused) {
+                                Icon(
+                                    imageVector = Icons.Filled.Clear,
+                                    contentDescription = "Clear Pencil",
+                                    modifier = Modifier.clickable { name = "" },
+                                    tint = Color.Gray
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit Pencil",
+                                    tint = Color.Gray
+                                )
+                            }
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(

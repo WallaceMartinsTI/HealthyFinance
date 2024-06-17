@@ -3,25 +3,22 @@ package com.wcsm.healthyfinance.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
-import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.RegisterFormState
 import com.wcsm.healthyfinance.data.model.User
-import com.wcsm.healthyfinance.data.repository.RegisterRepository
+import com.wcsm.healthyfinance.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import kotlin.random.Random
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val registerRepository: RegisterRepository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
@@ -73,7 +70,7 @@ class RegisterViewModel @Inject constructor(
         _registerFormState.value = _registerFormState.value.copy(isLoading = true)
 
         viewModelScope.launch {
-            registerRepository.createUserWithEmailAndPassword(email, password)
+            userRepository.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener {
                     val userId = it.user?.uid
                     if (userId != null) {
@@ -86,7 +83,7 @@ class RegisterViewModel @Inject constructor(
                             bills = emptyList()
                         )
                         viewModelScope.launch {
-                            registerRepository.saveUserFirestore(newUser)
+                            userRepository.saveUserFirestore(newUser)
                                 .addOnSuccessListener {
                                     Log.i(TAG, "Usuário SALVO no FIRESTORE com SUCESSO!")
                                     Log.i(TAG, "Usuário CRIADO com SUCESSO!")
@@ -134,7 +131,6 @@ class RegisterViewModel @Inject constructor(
                     )
                 }
         }
-
 
     }
 

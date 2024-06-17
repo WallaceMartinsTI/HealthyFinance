@@ -2,21 +2,26 @@ package com.wcsm.healthyfinance.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.Bill
 import com.wcsm.healthyfinance.data.model.User
+import com.wcsm.healthyfinance.data.repository.BillRepository
+import com.wcsm.healthyfinance.data.repository.UserRepository
 import com.wcsm.healthyfinance.ui.util.formatTimestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val userRepository: UserRepository,
+    private val billRepository: BillRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
@@ -44,6 +49,8 @@ class HomeViewModel @Inject constructor(
 
     private var _isSignout = MutableStateFlow(false)
     val isSignout = _isSignout.asStateFlow()
+
+    private val currentUser = auth.currentUser
 
     init {
         fetchUserData()
@@ -145,29 +152,22 @@ class HomeViewModel @Inject constructor(
     }
 
     fun deleteBillFrestore(billId: String) {
-        val userId = auth.currentUser?.uid
-
-        if(userId != null) {
-            val userDocRef = firestore.collection("users").document(userId)
-
-            firestore.runTransaction { transaction ->
-                val snapshot = transaction.get(userDocRef)
-                val user = snapshot.toObject(User::class.java)
-
-                if(user != null) {
-                    val updatedBills = user.bills.filterNot { it.id == billId }
-
-                    transaction.update(userDocRef, "bills", updatedBills)
+        if(currentUser != null) {
+            viewModelScope.launch {
+                billRepository.deleteBillFirestore(
+                    currentUser = currentUser,
+                    billId = billId
+                )
+                .addOnSuccessListener {
+                    _userBills.value = _userBills.value.filterNot { it.id == billId }
+                    _userValues.value = calculateUserValues(_userBills.value)
+                    if(userBills.value.isEmpty()) {
+                        resetUserData()
+                    }
+                    Log.i(TAG, "Bill DELETADA com Sucesso!")
+                }.addOnFailureListener {
+                    Log.i(TAG, "ERRO ao DELETAR Bill!")
                 }
-            }.addOnSuccessListener {
-                _userBills.value = _userBills.value.filterNot { it.id == billId }
-                _userValues.value = calculateUserValues(_userBills.value)
-                if(userBills.value.isEmpty()) {
-                    resetUserData()
-                }
-                Log.i(TAG, "Bill DELETADA com Sucesso!")
-            }.addOnFailureListener {
-                Log.i(TAG, "ERRO ao DELETAR Bill!")
             }
         }
     }
@@ -202,26 +202,25 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchUserData() {
-        val userId = auth.currentUser?.uid
-        if(userId != null) {
-            firestore
-                .collection("users")
-                .document(userId)
-                .get()
-                .addOnSuccessListener {document ->
-                    val user = document.toObject(User::class.java)
-                    user?.let {
-                        _isHistoricEmpty.value = user.bills.isEmpty()
-                        val sortedBills = user.bills.sortedByDescending { bill -> bill.date  }
-                        _userBills.value = sortedBills //user.bills
-                        _userValues.value = calculateUserValues(it.bills)
+        val currentUser = auth.currentUser
+        if(currentUser != null) {
+            viewModelScope.launch {
+                userRepository.fetchUserData(currentUser)
+                    .addOnSuccessListener {document ->
+                        val user = document.toObject(User::class.java)
+                        user?.let {
+                            _isHistoricEmpty.value = user.bills.isEmpty()
+                            val sortedBills = user.bills.sortedByDescending { bill -> bill.date  }
+                            _userBills.value = sortedBills
+                            _userValues.value = calculateUserValues(it.bills)
+                        }
+                        Log.i(TAG, "Busca de Usuário no FIRESTORE com SUCESSO!")
+                        setScreenLoading(false)
                     }
-                    Log.i(TAG, "Busca de Usuário no FIRESTORE com SUCESSO!")
-                    setScreenLoading(false)
-                }
-                .addOnFailureListener {
-                    Log.i(TAG, "ERRO ao buscar USUÁRIO no FIRESTORE.")
-                }
+                    .addOnFailureListener {
+                        Log.i(TAG, "ERRO ao buscar USUÁRIO no FIRESTORE.")
+                    }
+            }
         }
     }
 }

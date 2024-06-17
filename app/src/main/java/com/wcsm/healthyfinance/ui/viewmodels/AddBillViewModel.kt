@@ -2,22 +2,21 @@ package com.wcsm.healthyfinance.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.wcsm.healthyfinance.data.model.AddBillFormState
-import com.wcsm.healthyfinance.data.model.Bill
-import com.wcsm.healthyfinance.data.model.BillCategory
+import com.wcsm.healthyfinance.data.repository.BillRepository
 import com.wcsm.healthyfinance.ui.util.parseDateFromString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import java.util.UUID
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddBillViewModel @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val billRepository: BillRepository,
+    auth: FirebaseAuth
 ) : ViewModel() {
 
     private val TAG = "#FIREBASE_AUTH#"
@@ -30,6 +29,8 @@ class AddBillViewModel @Inject constructor(
 
     private val _billAdded = MutableStateFlow(false)
     val billAdded = _billAdded.asStateFlow()
+
+    private val currentUser = auth.currentUser
 
     fun updateAddBillFormState(newState: AddBillFormState) {
         _addBillFormState.value = newState
@@ -82,25 +83,35 @@ class AddBillViewModel @Inject constructor(
 
             val formattedDate = parseDateFromString(date)
             if(formattedDate != null) {
-                val currentUser = auth.currentUser
+                    setUpdateMessage("")
 
-                currentUser?.let { user ->
-                    val newBill = Bill(
-                        userId = user.uid,
-                        id = UUID.randomUUID().toString().replace("-", ""),
-                        //type = addBillFormState.value.type,
-                        description = addBillFormState.value.description,
-                        billCategory = BillCategory(
-                            type = addBillFormState.value.type,
-                            name = addBillFormState.value.category
-                        ),
-                        value = filteredValue,
-                        installment = addBillFormState.value.installment,
-                        date = formattedDate,
-                    )
+                    if(currentUser != null) {
+                        viewModelScope.launch {
+                            billRepository.saveBillFirestore(
+                                currentUser = currentUser,
+                                addBillFormState = addBillFormState.value,
+                                filteredValue = filteredValue,
+                                formattedDate = formattedDate
+                            )
+                                .addOnSuccessListener {
+                                    Log.i(TAG, "Conta (Bill) salva no Firestore com Sucesso!")
+                                    setUpdateMessage("Conta Adicionada com Sucesso!")
+                                    _addBillFormState.value = _addBillFormState.value.copy(isBillRegistered = true)
+                                    setBillAdded(true)
+                                }
+                                .addOnFailureListener {
+                                    Log.i(TAG, "ERRO ao SALVAR Conta (Bill) no FIRESTORE.")
+                                    setUpdateMessage("Erro ao Adicionar Conta.")
+                                    try {
+                                        throw it
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
 
-                    saveBillFirestore(newBill, user.uid)
-                }
+                            _addBillFormState.value = _addBillFormState.value.copy(isLoading = false)
+                        }
+                    }
             } else {
                 _addBillFormState.value = _addBillFormState.value.copy(isLoading = false)
             }
@@ -109,51 +120,6 @@ class AddBillViewModel @Inject constructor(
 
     private fun setUpdateMessage(message: String) {
         _updateMessage.value = message
-    }
-
-    private fun saveBillFirestore(newBill: Bill, userUid: String) {
-        setUpdateMessage("")
-        val userDocRef = firestore.collection("users").document(userUid)
-
-        firestore.runTransaction { transaction ->
-            val userDoc = transaction.get(userDocRef)
-            val userBills = userDoc.get("bills") as? MutableList<HashMap<String, Any>> ?: mutableListOf()
-
-            val newBillMap = hashMapOf<String, Any>(
-                "id" to newBill.id,
-                "userId" to newBill.userId,
-                //"type" to newBill.type,
-                "description" to newBill.description,
-                "billCategory" to hashMapOf(
-                    "type" to newBill.billCategory.type,
-                    "name" to newBill.billCategory.name
-                ),
-                "value" to newBill.value,
-                "installment" to newBill.installment,
-                "date" to newBill.date
-            )
-
-            userBills.add(newBillMap)
-
-            transaction.update(userDocRef, "bills", userBills)
-        }
-            .addOnSuccessListener {
-                Log.i(TAG, "Conta (Bill) salva no Firestore com Sucesso!")
-                setUpdateMessage("Conta Adicionada com Sucesso!")
-                _addBillFormState.value = _addBillFormState.value.copy(isBillRegistered = true)
-                setBillAdded(true)
-            }
-            .addOnFailureListener {
-                Log.i(TAG, "ERRO ao SALVAR Conta (Bill) no FIRESTORE.")
-                setUpdateMessage("Erro ao Adicionar Conta.")
-                try {
-                    throw it
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-        _addBillFormState.value = _addBillFormState.value.copy(isLoading = false)
     }
 
     private fun validateValue(value: String, newState: AddBillFormState): Double? {
