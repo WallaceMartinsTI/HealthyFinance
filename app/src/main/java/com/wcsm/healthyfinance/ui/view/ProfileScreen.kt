@@ -1,8 +1,10 @@
 package com.wcsm.healthyfinance.ui.view
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -59,6 +61,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
@@ -227,10 +230,21 @@ fun ProfileScreen(
         }
     }
 
+    LaunchedEffect(key1 = showDatePickerDialog) {
+        if(showDatePickerDialog) {
+            focusManager.clearFocus()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundColor),
+            .background(BackgroundColor)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    focusManager.clearFocus()
+                }
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box {
@@ -457,7 +471,7 @@ fun ProfileScreen(
                             .onFocusEvent {
                                 if(it.isFocused) {
                                     showDatePickerDialog = true
-                                    focusManager.clearFocus(force = true)
+                                    //focusManager.clearFocus(force = true)
                                 }
                             },
                         textStyle = TextStyle(color = Color.LightGray),
@@ -564,7 +578,8 @@ fun ProfileScreen(
 
                     PrimaryButton(
                         modifier = Modifier
-                            .width(280.dp).padding(top = 8.dp),
+                            .width(280.dp)
+                            .padding(top = 8.dp),
                         enabled = !isLoadingUpdate,
                         enabledText = "SALVAR ALTERAÇÕES",
                         disabledText = "ATUALIZANDO...",
