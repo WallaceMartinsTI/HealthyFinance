@@ -342,7 +342,8 @@ fun ProfileScreen(
                         },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
                         )
                     )
 

@@ -362,7 +362,10 @@ fun AddBillScreen(
                             },
                             errorMessage = addBillFormState.valueErrorMessage,
                             visualTransformation = CurrencyVisualTransformation(),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Decimal,
+                                imeAction = ImeAction.Next
+                            ),
                             unfocusedLabelColorExpression = addBillFormState.value.isNotEmpty(),
                             trailingIcon = {
                                 if(value != "0") {
@@ -399,6 +402,10 @@ fun AddBillScreen(
                             },
                             isError = addBillFormState.descriptionErrorMessage != null,
                             errorMessage = addBillFormState.descriptionErrorMessage,
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+                            ),
                             unfocusedLabelColorExpression = addBillFormState.description.isNotEmpty(),
                             trailingIcon = {
                                 if(addBillFormState.description != "") {

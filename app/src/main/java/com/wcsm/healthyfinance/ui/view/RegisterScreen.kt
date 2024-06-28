@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -89,7 +90,10 @@ fun RegisterScreen(
                     }
                 },
                 errorMessage = registerFormState.emailErrorMessage,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
+                ),
                 unfocusedLabelColorExpression = registerFormState.email.isNotEmpty(),
                 trailingIcon = {
                     if(registerFormState.email.isNotEmpty()) {
@@ -119,7 +123,10 @@ fun RegisterScreen(
                     registerViewModel.updateRegisterFormState(registerFormState.copy(password = password))
                 },
                 errorMessage = registerFormState.passwordErrorMessage,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
                 visualTransformation = if (registerFormState.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 unfocusedLabelColorExpression = registerFormState.password.isNotEmpty(),
                 trailingIcon = {
@@ -148,7 +155,10 @@ fun RegisterScreen(
                     registerViewModel.updateRegisterFormState(registerFormState.copy(confirmPassword = confirmPassword))
                 },
                 errorMessage = registerFormState.confirmPasswordErrorMessage,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
                 visualTransformation = if (registerFormState.showConfirmPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 unfocusedLabelColorExpression = registerFormState.confirmPassword.isNotEmpty(),
                 trailingIcon = {

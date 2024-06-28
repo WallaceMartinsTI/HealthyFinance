@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -133,7 +134,10 @@ fun LoginScreen(
                         loginViewModel.updateLoginFormState(loginFormState.copy(email = email))
                     },
                     errorMessage = loginFormState.emailErrorMessage,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
                     unfocusedLabelColorExpression = loginFormState.email.isNotEmpty(),
                     trailingIcon = {
                         if (loginFormState.email.isNotEmpty()) {
@@ -167,7 +171,10 @@ fun LoginScreen(
                         )
                     },
                     errorMessage = loginFormState.passwordErrorMessage,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     unfocusedLabelColorExpression = loginFormState.password.isNotEmpty(),
                     trailingIcon = {
                         Icon(
