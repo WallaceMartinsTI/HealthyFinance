@@ -205,7 +205,7 @@ fun LoginScreen(
                             .padding(top = 12.dp)
                             .clickable {
                                 if (loginFormState.showRememberPassword) {
-                                    loginViewModel.rememberPassword()
+                                    loginViewModel.forgotPassword()
                                 }
                             },
                         text = if(loginFormState.showRememberPassword) "Esqueci minha senha"

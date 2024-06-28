@@ -1,6 +1,5 @@
 package com.wcsm.healthyfinance.ui.viewmodels
 
-import android.net.ConnectivityManager
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,7 +19,6 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val networkRepository: NetworkRepository
 ) : ViewModel() {
-
     private val TAG = "#FIREBASE_AUTH#"
 
     private val _loginFormState = MutableStateFlow(LoginFormState())
@@ -39,7 +37,7 @@ class LoginViewModel @Inject constructor(
         _loginFormState.value = newState
     }
 
-    fun rememberPassword() {
+    fun forgotPassword() {
         val email = loginFormState.value.email
 
         val newState = _loginFormState.value.copy(
