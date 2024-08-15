@@ -41,10 +41,6 @@ Welcome to Healthy Finance! The app is designed to help you take control of your
 - `Firebase`
 - `MPAndroidChart`
 
-## 🎯 Next Steps
-
-Enhance the app by implementing DI (Dependence Injection) and MVVM Architecture.
-
 ## ✒️ Final Considerations
 
 In the demonstration video the Calendar is always in English because the device is in English, if the device's language was in Portuguese, the calendar would be in Portuguese. Finally, as a beginner, I am extremely pleased with the result and the journey I undertook to achieve it.
